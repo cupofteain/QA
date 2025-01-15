@@ -126,6 +126,26 @@ try:
         print("Переход в корзину выполнен.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
+    
+    # Найти и кликнуть на кнопку "Убрать услугу"
+        try:
+    # Прокрутка до конца страницы
+            WebDriverWait(driver, 20).until(
+            lambda driver: driver.execute_script("return document.documentElement.scrollHeight") > driver.execute_script("return window.innerHeight")
+            )
+
+        # Подождать появления элемента с более широкой проверкой доступности
+            element = WebDriverWait(driver, 20).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'DriveCareServiceCard_actionButton__5vD_V')]"))
+            )
+    # Убрать наложение перед кликом
+            driver.execute_script("arguments[0].style.pointerEvents = 'auto';", element)
+            element.click()
+            print("Услуга DviveCare успешно удалена.")
+        except Exception as e:
+            print(f"Произошла ошибка при удалении услуги: {e}")
+            # Добавляем небольшую паузу перед следующими действиями
+        time.sleep(3)
 
     # Клик на кнопку "Переход к оформлению"
     try:
