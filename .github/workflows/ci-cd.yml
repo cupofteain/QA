@@ -24,6 +24,21 @@ jobs:
         run: |
           pytest
 
+      - name: Capture Screenshot on Failure
+        if: failure()
+        uses: actions/checkout@v3
+        with:
+          path: screenshots
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        
+      - name: Upload Screenshot
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-screenshot
+          path: screenshots/screenshot.png
+
       - name: Notify on Errors
         if: failure()
         uses: actions/github-script@v3
@@ -33,6 +48,7 @@ jobs:
               owner: ${{ github.repository_owner }},
               repo: ${{ github.repository }},
               title: "Test Failure Alert",
-              body: "Tests failed. Please check the logs."
+              body: "Tests failed. Please check the logs and attached screenshot.",
+              labels: ["bug"]
             )
 
