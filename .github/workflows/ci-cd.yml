@@ -1,54 +1,11 @@
-name: Run Tests Daily
+name: Test Schedule
 
 on:
   schedule:
-    - cron: '0 10 * * *'  # Запуск каждый день в 10:00
+    - cron: '*/5 * * * *' # Запуск каждые 5 минут
 
 jobs:
-  run-tests:
+  test-schedule:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v3
-        with:
-          python-version: '3.x'
-
-      - name: Install dependencies
-        run: |
-          pip install -r requirements.txt
-
-      - name: Run Tests
-        run: |
-          pytest
-
-      - name: Capture Screenshot on Failure
-        if: failure()
-        uses: actions/checkout@v3
-        with:
-          path: screenshots
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        
-      - name: Upload Screenshot
-        if: failure()
-        uses: actions/upload-artifact@v3
-        with:
-          name: error-screenshot
-          path: screenshots/screenshot.png
-
-      - name: Notify on Errors
-        if: failure()
-        uses: actions/github-script@v3
-        with:
-          script: |
-            github.rest.issues.create(
-              owner: ${{ github.repository_owner }},
-              repo: ${{ github.repository }},
-              title: "Test Failure Alert",
-              body: "Tests failed. Please check the logs and attached screenshot.",
-              labels: ["bug"]
-            )
-
+      - run: echo "Workflow triggered on schedule!"
