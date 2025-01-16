@@ -1,11 +1,52 @@
-name: Test Schedule
+name: Run Tests Daily
 
 on:
   schedule:
-    - cron: '*/5 * * * *' # Запуск каждые 5 минут
+    - cron: '0 4 * * *'  # Запуск каждый день в 04:00 UTC (10:00 Алматы)
 
 jobs:
-  test-schedule:
+  run-tests:
     runs-on: ubuntu-latest
+
     steps:
-      - run: echo "Workflow triggered on schedule!"
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v3
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Run Tests
+        run: |
+          pytest
+
+      - name: Capture Screenshot on Failure
+        if: failure()
+        run: |
+          mkdir -p screenshots
+          pytest --capture=tee-sys --html=report.html || true
+
+      - name: Upload Screenshot
+        if: failure()
+        uses: actions/upload-artifact@v3
+        with:
+          name: error-report
+          path: screenshots
+
+      - name: Notify on Errors
+        if: failure()
+        uses: actions/github-script@v3
+        with:
+          script: |
+            github.rest.issues.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: "Test Failure Alert",
+              body: "Tests failed. Check the attached logs and screenshots in the Actions artifacts.",
+              labels: ["bug"]
+            })
