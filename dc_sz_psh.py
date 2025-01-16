@@ -326,7 +326,7 @@ try:
 
     # Сохраняет номер заказа
     try:
-        WebDriverWait(driver, 10).until(
+        WebDriverWait(driver, 20).until(
             EC.presence_of_element_located((By.TAG_NAME, "body"))
         )
 
