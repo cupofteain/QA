@@ -1,0 +1,48 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.2, pytest-8.3.4, pluggy-1.5.0
+rootdir: C:\work_in_vs\QA
+collected 1 item
+
+sql_test.py Тестирование GET-запроса для получения списка отзывов.Начало url = https://api-stage.ecar.kz/review/list?PageNum=1&PageSize=20&OrderBy=asc
+Status Code: 200
+Response Message: System.Exception: Попытка SQL-инъекции [asc] в предложение ORDER BY: asc
+   at eCar.Lib.Models.Review.ReviewModel.CheckSQLInjectionForOrderByClause(String orderByClause, Boolean throwException) in /src/eCar.Lib/Models/Review/ReviewModel.cs:line 834
+   at eCar.Lib.Models.Review.ReviewModel.GetList(ISQL mssql, List`1 statuses, Nullable`1 cityId, Nullable`1 clientId, Nullable`1 orderId, Boolean getClientInfo, Nullable`1 from, Nullable`1 count, ObjectType2 objectType, Nullable`1 objectId, Nullable`1 isHasText, Nullable`1 dateCreatedMin, Nullable`1 dateCreatedMax, Nullable`1 datePlacedMin, Nullable`1 datePlacedMax, Boolean onlyWithoutAnswers, Nullable`1 showOnTop, ReviewSource source, Nullable`1 answerForReviewId, Nullable`1 reviewIdMin, String orderBy, Boolean includeAnswers) in /src/eCar.Lib/Models/Review/ReviewModel.cs:line 215
+   at eCar.Lib.Repositories.Reviews.ReviewRepository.<>c__DisplayClass4_0.<GetListAsync>b__0() in /src/eCar.Lib/Repositories/Reviews/ReviewRepository.cs:line 72
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at eCar.Lib.Repositories.Reviews.ReviewRepository.GetListAsync(ListRequest request) in /src/eCar.Lib/Repositories/Reviews/ReviewRepository.cs:line 64
+   at eCar.Lib.Services.Reviews.ReviewService.ListAsync(ListRequest request) in /src/eCar.Lib/Services/Reviews/ReviewService.cs:line 51
+   at eCar.Api.Controllers.ReviewController.ListAsync(ListRequest request) in /src/eCar.Api/Controllers/ReviewController.cs:line 45
+Тестирование GET-запроса для получения списка отзывов.Конец
+Тестирование GET-запроса для получения списка отзывов.Начало url = https://api-stage.ecar.kz/review/list?PageNum=1&PageSize=20&OrderBy=desc
+Status Code: 200
+Response Message: System.Exception: Попытка SQL-инъекции [desc] в предложение ORDER BY: desc
+   at eCar.Lib.Models.Review.ReviewModel.CheckSQLInjectionForOrderByClause(String orderByClause, Boolean throwException) in /src/eCar.Lib/Models/Review/ReviewModel.cs:line 834
+   at eCar.Lib.Models.Review.ReviewModel.GetList(ISQL mssql, List`1 statuses, Nullable`1 cityId, Nullable`1 clientId, Nullable`1 orderId, Boolean getClientInfo, Nullable`1 from, Nullable`1 count, ObjectType2 objectType, Nullable`1 objectId, Nullable`1 isHasText, Nullable`1 dateCreatedMin, Nullable`1 dateCreatedMax, Nullable`1 datePlacedMin, Nullable`1 datePlacedMax, Boolean onlyWithoutAnswers, Nullable`1 showOnTop, ReviewSource source, Nullable`1 answerForReviewId, Nullable`1 reviewIdMin, String orderBy, Boolean includeAnswers) in /src/eCar.Lib/Models/Review/ReviewModel.cs:line 215
+   at eCar.Lib.Repositories.Reviews.ReviewRepository.<>c__DisplayClass4_0.<GetListAsync>b__0() in /src/eCar.Lib/Repositories/Reviews/ReviewRepository.cs:line 72
+   at System.Threading.Tasks.Task`1.InnerInvoke()
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+--- End of stack trace from previous location ---
+   at System.Threading.ExecutionContext.RunFromThreadPoolDispatchLoop(Thread threadPoolThread, ExecutionContext executionContext, ContextCallback callback, Object state)
+   at System.Threading.Tasks.Task.ExecuteWithThreadLocal(Task& currentTaskSlot, Thread threadPoolThread)
+--- End of stack trace from previous location ---
+   at eCar.Lib.Repositories.Reviews.ReviewRepository.GetListAsync(ListRequest request) in /src/eCar.Lib/Repositories/Reviews/ReviewRepository.cs:line 64
+   at eCar.Lib.Services.Reviews.ReviewService.ListAsync(ListRequest request) in /src/eCar.Lib/Services/Reviews/ReviewService.cs:line 51
+   at eCar.Api.Controllers.ReviewController.ListAsync(ListRequest request) in /src/eCar.Api/Controllers/ReviewController.cs:line 45
+Тестирование GET-запроса для получения списка отзывов.Конец
+Тестирование GET-запроса для получения списка отзывов.Начало url = https://api-stage.ecar.kz/review/list?PageNum=1&PageSize=20&OrderBy=Status
+Status Code: 200
+Response Message: OK
+Тестирование GET-запроса для получения списка отзывов.Конец
+Тестирование GET-запроса для получения списка отзывов.Начало url = https://api-stage.ecar.kz/review/list?PageNum=1&PageSize=20&OrderBy=DatePlaced
+Status Code: 200
+Response Message: OK
+Тестирование GET-запроса для получения списка отзывов.Конец
+.
+
+============================== 1 passed in 2.26s ==============================
