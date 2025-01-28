@@ -57,6 +57,8 @@ try:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 
+    time.sleep(1)
+
     try:
         select_whell_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable(
@@ -138,10 +140,6 @@ try:
     driver.execute_script("window.scrollTo(0, 0);")
     time.sleep(3)
 
-    # Скрол к корзине
-    driver.execute_script("window.scrollTo(0, 0);")
-    time.sleep(3)
-
     # Нажатие на кнопку "Корзина"
     try:
         cart_button = WebDriverWait(driver, 10).until(
@@ -152,6 +150,58 @@ try:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 
+    try:
+        add_drive_plus = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//*[@id='main-content']/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/div[1]/div[3]/button",
+                )
+            )
+        )
+
+        driver.execute_script("arguments[0].click();", add_drive_plus)
+        print("Кнопка Добавить услгу - Drive+ успешно нажата.")
+    except Exception as e:
+        print(f"Ошибка при нажатии на кнопку 'Drive+': {e}")
+
+    time.sleep(2)
+
+    try:
+        add_wheel = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//*[@id='main-content']/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/div[2]/div[3]/button",
+                )
+            )
+        )
+
+        driver.execute_script("arguments[0].click();", add_wheel)
+        print("Кнопка Добавить услгу - Шиномонтаж успешно нажата.")
+    except Exception as e:
+        print(f"Ошибка при нажатии на кнопку 'Шиномонтаж': {e}")
+
+    time.sleep(2)
+
+    try:
+        tire_storage = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(
+                (
+                    By.XPATH,
+                    "//*[@id='main-content']/div/div/div[2]/div[2]/div[1]/div[1]/div[2]/div[3]/div[3]/button",
+                )
+            )
+        )
+
+        driver.execute_script("arguments[0].click();", tire_storage)
+        print("Кнопка Добавить услгу - Хранение шин успешно нажата.")
+    except Exception as e:
+        print(f"Ошибка при нажатии на кнопку 'Хранение шин': {e}")
+
+    time.sleep(3)
+    driver.execute_script("window.scrollBy(0, 200);")
+    time.sleep(1)
     # Клик на кнопку "Переход к оформению"
     try:
         checkout_button = WebDriverWait(driver, 10).until(
@@ -206,10 +256,10 @@ try:
 
     # Выбор способа доставки
     try:
-        client_green_zone = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.NAME, "shipmentServiceId"))
+        client_blue_zone = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//input[@name='shipmentServiceId' and @value='ecar_courier_zone2']"))
         )
-        client_green_zone.click()
+        client_blue_zone.click()
         print("Кнопка - Выбора доставки нажата")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
@@ -370,7 +420,6 @@ try:
     except Exception as e:
         print(f"Ошибка: {e}")
 
-    time.sleep(5)
     driver.execute_script("window.scrollBy(0, 300);")
     time.sleep(30)
 
@@ -399,8 +448,7 @@ try:
         print("Кнопка Выбрать предложение нажата")
     except Exception as e:
         print(f"ошибка в нажатии копки 'Выбрать предложение'")
-    
-    time.sleep(5)    
-finally:
-    driver.quit()
 
+finally:
+    time.sleep(5)
+    driver.quit()
