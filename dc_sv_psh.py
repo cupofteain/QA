@@ -11,6 +11,7 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
 )
+from selenium.common.exceptions import ElementClickInterceptedException
 import time
 import re
 import random
@@ -75,14 +76,35 @@ try:
     driver.execute_script("window.scrollBy(0, 50);")
     time.sleep(1)
 
-    # Клик на кнопку "Добавить в корзину"
+    # Переход на вторую страницу
+    try:
+        while True:
+            try:
+                # Пытаемся найти элемент и кликнуть на него
+                next_page_link = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.XPATH, '//a[@href="/tyres/almaty/page2"]'))
+                )
+                driver.execute_script("arguments[0].click();", next_page_link)
+                print("Перешли на вторую страницу шин.")
+                break
+            except TimeoutException:
+                # Если элемент не найден, скроллим страницу вниз
+                driver.execute_script("window.scrollBy(0, 100);")
+                print("Скроллим страницу вниз...")
+            except ElementClickInterceptedException:
+                print("Элемент не кликабелен, скроллим страницу.")
+                driver.execute_script("window.scrollBy(0, 100);")
+    except Exception as e:
+        print(f"Ошибка при переходе на вторую страницу: {e}")
+
+    time.sleep(3)
+
+    # Клик на случайную кнопку "Добавить в корзину"
     max_retries = 3
     for attempt in range(max_retries):
         try:
             product_buttons = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "ProductCardAlternative_addCart__CCEoW")
-                )
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "ProductCardAlternative_addCart__CCEoW"))
             )
 
             if product_buttons:
@@ -94,21 +116,17 @@ try:
                     break
                 except Exception as e:
                     driver.execute_script("arguments[0].click();", random_button)
-                    print("Случайная кнопка 'Добавить в корзину' нажата.")
+                    print("Случайная кнопка 'Добавить в корзину' нажата с помощью execute_script.")
                     break
             else:
                 print("Ошибка: кнопки 'Добавить в корзину' не найдены.")
                 break
 
         except StaleElementReferenceException:
-            print(
-                f"Попытка {attempt + 1} из {max_retries}: элемент устарел, пробуем снова..."
-            )
-            # Скроллим немного вниз перед следующей попыткой
-        driver.execute_script("window.scrollBy(0, 100);")
-        print(f"Скроллинг вниз перед попыткой {attempt + 1}...")
-        time.sleep(2)
-
+            print(f"Попытка {attempt + 1} из {max_retries}: элемент устарел, пробуем снова...")
+            driver.execute_script("window.scrollBy(0, 100);")
+            print(f"Скроллинг вниз перед попыткой {attempt + 1}...")
+            time.sleep(2)
     else:
         print("Ошибка: не удалось кликнуть по кнопке после нескольких попыток.")
         time.sleep(2)
@@ -255,10 +273,10 @@ try:
         ActionChains(driver).move_to_element(input_field).click().perform()
         print("Поле ввода найдено и на него выполнен клик.")
 
-        input_field.send_keys("244yer02")
+        input_field.send_keys("777yer02")
         time.sleep(1)
         print(
-            "Текст '244yer02' успешно введен."
+            "Текст '777yer02' успешно введен."
         )  # Укажите номер, который хотите ввести
 
     except Exception as e:
@@ -304,7 +322,7 @@ try:
     time.sleep(3)
 
     # ///////////////////////////////////////////////////////////////////////
-# Переход в админку для отмены заказа
+ # Переход в админку для отмены заказа
     try:
         driver.get("https://old-qa.ecar.kz/account/logon?returnUrl=%2fcabinet")  # Переход к старой версии админки
         driver.maximize_window()
@@ -350,6 +368,7 @@ try:
 
         # Прокручиваем страницу вниз
         try:
+            cancel_reason_select = driver.find_element((By.XPATH, '//*[@id="order-info-main-info"]/div[1]/div[4]/div[2]/div[9]/div[4]/label/span'))
             driver.execute_script("arguments[0].scrollIntoView();", cancel_reason_select)
             print("Прокрутка страницы вниз выполнена.")
         except Exception as e:

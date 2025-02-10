@@ -11,21 +11,21 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
 )
+from selenium.common.exceptions import ElementClickInterceptedException
 import time
 import re
 import random
 
 # Настройка драйвера
 options = Options()
-# options.add_argument("--headless")
-# options.add_argument("--window-size=1920x1080")
+options.add_argument("--incognito")  # Открытие браузера в режиме инкогнито
+options.add_argument("--start-maximized")  # Запуск браузера в развернутом виде
+# options.add_argument("--headless")  # Фоновый режим без UI (если нужно)
+
 driver = webdriver.Chrome(service=Service(), options=options)
 
 try:
     driver.get("https://front-qa.ecar.kz/")
-    time.sleep(3)
-    driver.maximize_window()
-
     time.sleep(3)
     # Проверка, открытия  меню выбора города
     try:
@@ -56,33 +56,49 @@ try:
         print("Кнопка 'Да, всё верно' нажата.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
-
-    # Нажатие на кнопку "Подобрать шины"
+# Нажатие на кнопку "Подобрать шины"
     try:
         select_tyres_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    "//*[text()='Подобрать шины']",
-                )
-            )
+            EC.element_to_be_clickable((By.XPATH, "//*[text()='Подобрать шины']"))
         )
         select_tyres_button.click()
         print("Кнопка - Подобрать шины нажата.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
+
     time.sleep(3)
     driver.execute_script("window.scrollBy(0, 50);")
     time.sleep(1)
 
-    # Клик на кнопку "Добавить в корзину"
+    # Переход на вторую страницу
+    try:
+        while True:
+            try:
+                # Пытаемся найти элемент и кликнуть на него
+                next_page_link = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.XPATH, '//a[@href="/tyres/almaty/page2"]'))
+                )
+                driver.execute_script("arguments[0].click();", next_page_link)
+                print("Перешли на вторую страницу шин.")
+                break
+            except TimeoutException:
+                # Если элемент не найден, скроллим страницу вниз
+                driver.execute_script("window.scrollBy(0, 100);")
+                print("Скроллим страницу вниз...")
+            except ElementClickInterceptedException:
+                print("Элемент не кликабелен, скроллим страницу.")
+                driver.execute_script("window.scrollBy(0, 100);")
+    except Exception as e:
+        print(f"Ошибка при переходе на вторую страницу: {e}")
+
+    time.sleep(3)
+
+    # Клик на случайную кнопку "Добавить в корзину"
     max_retries = 3
     for attempt in range(max_retries):
         try:
             product_buttons = WebDriverWait(driver, 10).until(
-                EC.presence_of_all_elements_located(
-                    (By.CLASS_NAME, "ProductCardAlternative_addCart__CCEoW")
-                )
+                EC.presence_of_all_elements_located((By.CLASS_NAME, "ProductCardAlternative_addCart__CCEoW"))
             )
 
             if product_buttons:
@@ -94,20 +110,17 @@ try:
                     break
                 except Exception as e:
                     driver.execute_script("arguments[0].click();", random_button)
-                    print("Случайная кнопка 'Добавить в корзину' нажата.")
+                    print("Случайная кнопка 'Добавить в корзину' нажата с помощью execute_script.")
                     break
             else:
                 print("Ошибка: кнопки 'Добавить в корзину' не найдены.")
                 break
 
         except StaleElementReferenceException:
-            print(
-                f"Попытка {attempt + 1} из {max_retries}: элемент устарел, пробуем снова..."
-            )
-            # Скроллим немного вниз перед следующей попыткой
-        driver.execute_script("window.scrollBy(0, 100);")
-        print(f"Скроллинг вниз перед попыткой {attempt + 1}...")
-        time.sleep(2)
+            print(f"Попытка {attempt + 1} из {max_retries}: элемент устарел, пробуем снова...")
+            driver.execute_script("window.scrollBy(0, 100);")
+            print(f"Скроллинг вниз перед попыткой {attempt + 1}...")
+            time.sleep(2)
 
     else:
         print("Ошибка: не удалось кликнуть по кнопке после нескольких попыток.")
@@ -127,25 +140,40 @@ try:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
     
-    # Найти и кликнуть на кнопку "Убрать услугу"
-        try:
-    # Прокрутка до конца страницы
-            WebDriverWait(driver, 20).until(
-            lambda driver: driver.execute_script("return document.documentElement.scrollHeight") > driver.execute_script("return window.innerHeight")
-            )
+        # Найти и кликнуть на кнопку "Убрать услугу"
+    try:
+        while True:
+            try:
+                # Проверяем наличие кнопки
+                element = WebDriverWait(driver, 5).until(
+                    EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'DriveCareServiceCard_actionButton__5vD_V')]"))
+                )
+                # Если кнопка найдена, скроллим к ней
+                driver.execute_script("arguments[0].scrollIntoView(true);", element)
+                driver.execute_script("window.scrollBy(0, -100);")  # Поднимаем чуть выше для клика
+                time.sleep(1)  # Задержка перед кликом
+                element.click()
+                print("Услуга DriveCare успешно удалена.")
+                break
+            except Exception as e:
+                print("Кнопка не найдена, продолжаем скроллить.")
+                # Скроллим вниз на небольшое расстояние
+                driver.execute_script("window.scrollBy(0, 300);")
+                time.sleep(0.5)
 
-        # Подождать появления элемента с более широкой проверкой доступности
-            element = WebDriverWait(driver, 20).until(
-                EC.element_to_be_clickable((By.XPATH, "//button[contains(@class, 'DriveCareServiceCard_actionButton__5vD_V')]"))
-            )
-    # Убрать наложение перед кликом
-            driver.execute_script("arguments[0].style.pointerEvents = 'auto';", element)
-            element.click()
-            print("Услуга DviveCare успешно удалена.")
-        except Exception as e:
-            print(f"Произошла ошибка при удалении услуги: {e}")
-            # Добавляем небольшую паузу перед следующими действиями
-        time.sleep(3)
+            # Проверяем конец страницы
+            scroll_height = driver.execute_script("return document.documentElement.scrollHeight")
+            current_scroll = driver.execute_script("return window.pageYOffset + window.innerHeight")
+            if current_scroll >= scroll_height:
+                print("Достигнут конец страницы, кнопка не найдена.")
+                break
+
+    except Exception as e:
+        print(f"Произошла ошибка при удалении услуги: {e}")
+
+    # Переход к следующему шагу, если кнопка не была найдена
+    print("Переход к следующему шагу...")
+    time.sleep(3)
 
     # Клик на кнопку "Переход к оформлению"
     try:
@@ -163,7 +191,6 @@ try:
         phone_input = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.NAME, "phoneNumber"))
         )
-
         phone_input.click()
 
         phone_input.send_keys("7471472003")
@@ -200,24 +227,38 @@ try:
     time.sleep(2)
 
     # Выбираем способ доставки - Самовывоз
-    shipment_methods = driver.find_elements(By.XPATH, "//input[@name='shipmentServiceId']")
-
-    for method in shipment_methods:
-        if method.get_attribute('value') == 'ecar_selfservice':
-            print('method')
-            print(method)
-            method.click()
-            print("Кнопка 'Самовывоз' нажата.")
-            break
-
-    # Найти все маркеры на карте
-    markers = WebDriverWait(driver, 10).until(
-    EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ymaps-2-1-79-placemark-overlay'))
-      )
-    # Проверяем, найдены ли маркеры
-    if not markers:
-        raise Exception("Маркеры на карте не найдены")
     
+    try:
+        shipment_methods = driver.find_elements(By.XPATH, "//input[@name='shipmentServiceId']")
+
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        
+    try:
+        for method in shipment_methods:
+            if method.get_attribute('value') == 'ecar_selfservice':
+                print('method')
+                print(method)
+                # Скроллим до элемента
+                driver.execute_script("arguments[0].scrollIntoView(true);", method)
+                ActionChains(driver).move_to_element(method).perform()
+
+                # Клик по элементу
+                method.click()
+                print("Кнопка 'Самовывоз' нажата.")
+                break
+
+        # Найти все маркеры на карте
+        markers = WebDriverWait(driver, 10).until(
+        EC.presence_of_all_elements_located((By.CSS_SELECTOR, '.ymaps-2-1-79-placemark-overlay'))
+        )
+        # Проверяем, найдены ли маркеры
+        if not markers:
+            raise Exception("Маркеры на карте не найдены")
+    
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+        
     # Перебираем маркеры и взаимодействуем
     for index, marker in enumerate(markers):
         try:
@@ -236,7 +277,8 @@ try:
 
             time.sleep(5)  # Задержка на случай, если требуется время для клика
         except Exception as e:
-            print(f"Произошла ошибка: {e}")
+            print(f"Произошла ошибка: {e}")   
+            
         # Выбор способа оплаты
         try:
             online_payment_button = WebDriverWait(driver, 10).until(
@@ -253,51 +295,14 @@ try:
             print(f"Произошла ошибка: {e}")
 
         # Клик на кнопку "Оформить заказ"
-            next_btn_3 = WebDriverWait(driver, 10).until(
-             EC.element_to_be_clickable((By.XPATH, "//*[text()='Оформить заказ']"))
-            )
+        next_btn_3 = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.XPATH, "//*[text()='Оформить заказ']"))
+        )
 
         next_btn_3.click()
         print("Кнопка Оформить заказ нажата.")
 
         time.sleep(7)
-
-        # Ввод номера машины
-        input_field = WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located(
-            (By.CSS_SELECTOR, "input.Input_input__BbM8T.styles_input__3lJwv")
-            )
-        )
-
-        try:
-            ActionChains(driver).move_to_element(input_field).click().perform()
-            print("Поле ввода найдено и на него выполнен клик.")
-
-            input_field.send_keys("244yer02")
-            time.sleep(1)
-            print(
-            "Текст '244yer02' успешно введен."
-            )  # Укажите номер, который хотите ввести
-
-        except Exception as e:
-            print(f"Произошла ошибка: {e}")
-
-        # Клик на кнопку "Подключить сервис"
-        try:
-            connect_service_btn = WebDriverWait(driver, 10).until(
-                EC.element_to_be_clickable(
-                (
-                    By.XPATH,
-                    "//*[text()='Подключить сервис']",
-                )
-                )
-            )
-            connect_service_btn.click()
-            print("Кнопка - Подключить сервис нажата")
-
-        except Exception as e:
-            print(f"Произошла ошибка: {e}")
-            time.sleep(3)
 
             # Клик на кнопку "Оплата онлайн"
         try:
@@ -404,31 +409,31 @@ try:
             raise SystemExit("Тест завершен из-за ошибки: кнопка Оплатить не найдена")
 
         time.sleep(5)
-        # Сохраняет номер заказа
-        try:
-            WebDriverWait(driver, 10).until(
-                EC.presence_of_element_located((By.TAG_NAME, "body"))
-            )
+    
+    # Сохраняет номер заказа
+    try:
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, "body"))
+        )
 
-            elements = driver.find_elements(By.XPATH, "//*[contains(text(), 'Заказ')]")
+        elements = driver.find_elements(By.XPATH, "//*[contains(text(), 'Заказ')]")
 
-            for element in elements:
-                text = element.text
-                match = re.search(r"Заказ\s*(\d+)", text)
+        for element in elements:
+            text = element.text
+            match = re.search(r"Заказ\s*(\d+)", text)
             if match:
                 order_number = match.group(1)
                 print(f"Найден номер заказа: {order_number}")
                 break
-            else:
-                print("Номер заказа не найден.")
+        else:
+            print("Номер заказа не найден.")
 
-        except Exception as e:
-            print(f"Произошла ошибка: {e}")
-        time.sleep(3)
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+    time.sleep(3)
 
-    # ///////////////////////////////////////////////////////////////////////
-
-# Переход в админку для отмены заказа
+        # ///////////////////////////////////////////////////////////////////////
+    # Переход в админку для отмены заказа
     try:
         driver.get("https://old-qa.ecar.kz/account/logon?returnUrl=%2fcabinet")  # Переход к старой версии админки
         driver.maximize_window()
@@ -474,6 +479,7 @@ try:
 
         # Прокручиваем страницу вниз
         try:
+            cancel_reason_select = driver.find_element((By.XPATH, '//*[@id="order-info-main-info"]/div[1]/div[4]/div[2]/div[9]/div[4]/label/span'))
             driver.execute_script("arguments[0].scrollIntoView();", cancel_reason_select)
             print("Прокрутка страницы вниз выполнена.")
         except Exception as e:
