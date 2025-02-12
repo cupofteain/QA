@@ -11,10 +11,10 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
 )
+from selenium.common.exceptions import ElementClickInterceptedException
 import time
 import re
 import random
-
 # Настройка драйвера
 options = Options()
 #options.add_argument("--headless")

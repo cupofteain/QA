@@ -123,7 +123,35 @@ try:
         print("Переход в корзину выполнен.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
+        
+    # Функция для добавления услуги по data-test-id
+    def add_service(service_id, service_name):
+        try:
+            # Ожидаем появления карточки услуги
+            service_card = WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located((By.XPATH, f"//div[@data-test-id='{service_id}']"))
+            )
 
+            # Ищем кнопку "Добавить услугу" внутри карточки
+            add_button = service_card.find_element(By.XPATH, ".//button[span[text()='Добавить услугу']]")
+            
+            # Кликаем по кнопке
+            add_button.click()
+            print(f"Услуга '{service_name}' добавлена.")
+
+        except Exception as e:
+            print(f"Ошибка при добавлении услуги '{service_name}': {e}")
+
+    # Добавление всех услуг
+    services = {
+        "service-card-shinomontazh": "Шиномонтаж",
+        "service-card-service-cart-storage": "Хранение шин",
+        "service-card-drivePlus": "Гарантия Drive+"
+    }
+
+    for service_id, service_name in services.items():
+        add_service(service_id, service_name)
+    
     # Клик на кнопку "Переход к оформлению"
     try:
         checkout_button = WebDriverWait(driver, 10).until(
@@ -179,7 +207,12 @@ try:
     # Выбор способа доставки
     try:
         client_blue_zone = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//input[@name='shipmentServiceId' and @value='ecar_courier_zone2']"))
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    "//input[@name='shipmentServiceId' and @value='ecar_courier_zone2']",
+                )
+            )
         )
         client_blue_zone.click()
         print("Кнопка - Выбора доставки нажата")
@@ -196,7 +229,7 @@ try:
         shipment_address = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.NAME, "shipmentAddress"))
         )
-        shipment_address.send_keys("Абая 14")
+        shipment_address.send_keys("Там 32/2")
         print("Улица введена.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
@@ -262,20 +295,20 @@ try:
     print("Кнопка продолжить нажата.")
     time.sleep(2)
 
-    # Выбор способа оплаты - По счету через банк
+     # Выбор способа оплаты - По счету через банк
     try:
-     bank_payment_button = WebDriverWait(driver, 10).until(
-        EC.element_to_be_clickable(
+        bank_payment_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
             (
                 By.XPATH,
                 "//*[contains(@class, 'Subtitle_root__LPeeH') and contains(@class, 'Subtitle_small__0rf0J') and text()='По счету через банк']",
             )
-        )
-    )
-     bank_payment_button.click()
-     print("Кнопка 'По счету через банк' нажата.")
+                )
+            )
+        bank_payment_button.click()
+        print("Кнопка 'По счету через банк' нажата.")
     except Exception as e:
-     print(f"Произошла ошибка: {e}")
+        print(f"Произошла ошибка: {e}")
 
 
     # Клик на кнопку "Оформить заказ"
@@ -292,8 +325,8 @@ try:
     input_field = WebDriverWait(driver, 10).until(
         EC.presence_of_element_located(
             (By.CSS_SELECTOR, "input.Input_input__BbM8T.styles_input__3lJwv")
+            )
         )
-    )
 
     try:
         ActionChains(driver).move_to_element(input_field).click().perform()
@@ -348,7 +381,7 @@ try:
     time.sleep(3)
 
     # ///////////////////////////////////////////////////////////////////////
- # Переход в админку для отмены заказа
+     # Переход в админку для отмены заказа
     try:
         driver.get("https://old-qa.ecar.kz/account/logon?returnUrl=%2fcabinet")  # Переход к старой версии админки
         driver.maximize_window()
