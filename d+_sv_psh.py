@@ -145,25 +145,25 @@ try:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
         
-    # Добавить услугу Шиномонтаж
-    def add_shinomontazh():
+    # Добавить услугу Гарантия Drive+
+    def add_drive_plus():
         try:
-            # Ожидаем появления карточки "Шиномонтаж"
+            # Ожидаем появления карточки "Гарантия Drive+"
             service_card = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.XPATH, "//div[@data-test-id='service-card-shinomontazh']"))
+                EC.visibility_of_element_located((By.XPATH, "//div[@data-test-id='service-card-drivePlus']"))
             )
             
-            # Ищем кнопку "Добавить услугу" внутри карточки "Шиномонтаж"
+            # Ищем кнопку "Добавить услугу" внутри карточки "Гарантия Drive+"
             add_button = service_card.find_element(By.XPATH, ".//button[span[text()='Добавить услугу']]")
             
             # Кликаем по кнопке
             add_button.click()
-            print("Услуга 'Шиномонтаж' добавлена.")
+            print("Услуга 'Гарантия Drive+' добавлена.")
 
         except Exception as e:
-            print(f"Ошибка при добавлении услуги 'Шиномонтаж': {e}")
+            print(f"Ошибка при добавлении услуги 'Гарантия Drive+': {e}")
 
-    add_shinomontazh()
+    add_drive_plus()
     
          # Найти и кликнуть на кнопку "Убрать услугу"
     try:

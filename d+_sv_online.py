@@ -145,25 +145,25 @@ try:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
         
-    # Добавить услугу Шиномонтаж
-    def add_shinomontazh():
+    # Добавить услугу Гарантия Drive+
+    def add_drive_plus():
         try:
-            # Ожидаем появления карточки "Шиномонтаж"
+            # Ожидаем появления карточки "Гарантия Drive+"
             service_card = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.XPATH, "//div[@data-test-id='service-card-shinomontazh']"))
+                EC.visibility_of_element_located((By.XPATH, "//div[@data-test-id='service-card-drivePlus']"))
             )
             
-            # Ищем кнопку "Добавить услугу" внутри карточки "Шиномонтаж"
+            # Ищем кнопку "Добавить услугу" внутри карточки "Гарантия Drive+"
             add_button = service_card.find_element(By.XPATH, ".//button[span[text()='Добавить услугу']]")
             
             # Кликаем по кнопке
             add_button.click()
-            print("Услуга 'Шиномонтаж' добавлена.")
+            print("Услуга 'Гарантия Drive+' добавлена.")
 
         except Exception as e:
-            print(f"Ошибка при добавлении услуги 'Шиномонтаж': {e}")
+            print(f"Ошибка при добавлении услуги 'Гарантия Drive+': {e}")
 
-    add_shinomontazh()
+    add_drive_plus()
     
          # Найти и кликнуть на кнопку "Убрать услугу"
     try:
@@ -256,7 +256,6 @@ try:
     
     try:
         shipment_methods = driver.find_elements(By.XPATH, "//input[@name='shipmentServiceId']")
-
     except Exception as e:
         print(f"Произошла ошибка: {e}")
         
@@ -301,44 +300,139 @@ try:
         except Exception as e:
             print(f"Ошибка: {e}")
 
-            time.sleep(5)  # Задержка на случай, если требуется время для клика
+            time.sleep(5) 
         except Exception as e:
-            print(f"Произошла ошибка: {e}") 
+            print(f"Произошла ошибка: {e}")   
             
-    # Выбор способа оплаты - По счету через банк
+    # Выбор способа оплаты
     try:
-        bank_payment_button = WebDriverWait(driver, 10).until(
+        online_payment_button = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable(
             (
                 By.XPATH,
-                "//*[contains(@class, 'Subtitle_root__LPeeH') and contains(@class, 'Subtitle_small__0rf0J') and text()='По счету через банк']",
+                "//*[contains(@class, 'Subtitle_root__LPeeH') and contains(@class, 'Subtitle_small__0rf0J') and text()='Онлайн оплата картой']",
             )
-                )
             )
-        bank_payment_button.click()
-        print("Кнопка 'По счету через банк' нажата.")
+        )
+        online_payment_button.click()
+        print("Кнопка 'Онлайн оплата картой' нажата.")
     except Exception as e:
         print(f"Произошла ошибка: {e}")
 
-
-    try:
     # Клик на кнопку "Оформить заказ"
         next_btn_3 = WebDriverWait(driver, 10).until(
             EC.element_to_be_clickable((By.XPATH, "//*[text()='Оформить заказ']"))
         )
-
         next_btn_3.click()
         print("Кнопка Оформить заказ нажата.")
 
+    time.sleep(7)
+    
+        # Клик на кнопку "Оплата онлайн"
+    try:
+        oplata_button = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable(
+            (
+                By.XPATH,
+                "//*[contains(@class, 'Button_button__a61EI') and contains(@class, 'Button_primary__P0bZq') and contains(@class, 'Button_medium__lxzcc') and contains(@class, 'OrderStatus_btn__Ifia1')]",
+            )
+            )
+        )
+        oplata_button.click()
+        print(
+        "Кнопка с классом 'Button_button__a61EI Button_primary__P0bZq Button_medium__lxzcc OrderStatus_btn__Ifia1' успешно нажата."
+        )
     except Exception as e:
         print(f"Произошла ошибка: {e}")
-        
-    time.sleep(3)
-    
-    driver.execute_script("window.scrollTo(0, 300);")
-    time.sleep(10)
-        
-   # Сохраняет номер заказа
+
+    try:
+        pan_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "pan"))
+        )
+        pan_input.click()
+        pan_input.send_keys("4111 1111 1111 1111")
+        print("Номер карты успешно введен в поле с id='pan'.")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+
+    try:
+        month_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "month"))
+        )
+        month_input.click()
+        month_input.send_keys("12")
+        print("Значение '12' успешно введено в поле с id='month'.")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+
+    try:
+        year_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "year"))
+        )
+        year_input.click()
+        year_input.send_keys("30")
+        print("Значение '30' успешно введено в поле с id='year'.")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+
+    try:
+        cvv_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "cvv"))
+        )
+        cvv_input.click()
+        cvv_input.send_keys("123")
+        print("Значение '123' успешно введено в поле с id='cvv'.")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+
+    try:
+        holder_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "holder"))
+        )
+        holder_input.click()
+        holder_input.send_keys("Test test")
+        print("Текст 'Test test' успешно введен в поле с id='holder'.")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+
+    try:
+        telephone_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "telephone"))
+        )
+        telephone_input.click()
+        telephone_input.send_keys("77075007554")
+        print("Номер телефона успешно введен в поле с id='telephone'.")
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
+
+    try:
+        email_input = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.ID, "email"))
+        )
+        email_input.click()
+        email_input.send_keys("yerlezhan@fdrive.kz")
+        print("email введен")
+    except Exception as e:
+        print(f"email не удалось ввести: {e}")
+
+    time.sleep(5)
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+
+    try:
+        button = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(
+            (By.XPATH, "//*[contains(text(),'Оплатить')]")
+            )
+        )
+        driver.execute_script("arguments[0].click();", button)
+        print("Кнопка нажата через JavaScript.")
+    except Exception as e:
+        print(f"Ошибка: не удалось кликнуть по кнопке через JavaScript: {e}")
+        raise SystemExit("Тест завершен из-за ошибки: кнопка Оплатить не найдена")
+
+    time.sleep(5)
+            
+        # Сохраняет номер заказа
     try:
         WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, "body"))
@@ -359,8 +453,9 @@ try:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
     time.sleep(3)
-
+    
         # ///////////////////////////////////////////////////////////////////////
+        
     # Переход в админку для отмены заказа
     try:
         driver.get("https://old-qa.ecar.kz/account/logon?returnUrl=%2fcabinet")  # Переход к старой версии админки

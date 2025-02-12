@@ -145,25 +145,25 @@ try:
     except Exception as e:
         print(f"Произошла ошибка: {e}")
         
-    # Добавить услугу Шиномонтаж
-    def add_shinomontazh():
+    # Добавить услугу Гарантия Drive+
+    def add_drive_plus():
         try:
-            # Ожидаем появления карточки "Шиномонтаж"
+            # Ожидаем появления карточки "Гарантия Drive+"
             service_card = WebDriverWait(driver, 10).until(
-                EC.visibility_of_element_located((By.XPATH, "//div[@data-test-id='service-card-shinomontazh']"))
+                EC.visibility_of_element_located((By.XPATH, "//div[@data-test-id='service-card-drivePlus']"))
             )
             
-            # Ищем кнопку "Добавить услугу" внутри карточки "Шиномонтаж"
+            # Ищем кнопку "Добавить услугу" внутри карточки "Гарантия Drive+"
             add_button = service_card.find_element(By.XPATH, ".//button[span[text()='Добавить услугу']]")
             
             # Кликаем по кнопке
             add_button.click()
-            print("Услуга 'Шиномонтаж' добавлена.")
+            print("Услуга 'Гарантия Drive+' добавлена.")
 
         except Exception as e:
-            print(f"Ошибка при добавлении услуги 'Шиномонтаж': {e}")
+            print(f"Ошибка при добавлении услуги 'Гарантия Drive+': {e}")
 
-    add_shinomontazh()
+    add_drive_plus()
     
          # Найти и кликнуть на кнопку "Убрать услугу"
     try:
@@ -305,20 +305,20 @@ try:
         except Exception as e:
             print(f"Произошла ошибка: {e}") 
             
-    # Выбор способа оплаты - По счету через банк
+        # Выбор способа оплаты - Оплата при получении
     try:
-        bank_payment_button = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable(
+     cash_payment_button = WebDriverWait(driver, 10).until(
+          EC.element_to_be_clickable(
             (
                 By.XPATH,
-                "//*[contains(@class, 'Subtitle_root__LPeeH') and contains(@class, 'Subtitle_small__0rf0J') and text()='По счету через банк']",
+                "//*[contains(@class, 'Subtitle_root__LPeeH') and contains(@class, 'Subtitle_small__0rf0J') and text()='Оплата при получении']",
             )
-                )
-            )
-        bank_payment_button.click()
-        print("Кнопка 'По счету через банк' нажата.")
+        )
+    )
+     cash_payment_button.click()
+     print("Кнопка 'Оплата при получении' нажата.")
     except Exception as e:
-        print(f"Произошла ошибка: {e}")
+     print(f"Произошла ошибка: {e}")
 
 
     try:
