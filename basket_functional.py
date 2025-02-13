@@ -35,7 +35,7 @@ try:
             EC.presence_of_element_located(
                 (
                     By.XPATH,
-                    "//div[contains(@class, 'CitySelectModal_cityInitialModal__CYQei')]",
+                    "//div[contains(@class, 'CitySelectModal_cityInitialModal')]",
                 )
             )
         )
