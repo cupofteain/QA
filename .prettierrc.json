@@ -1,0 +1,7 @@
+{
+    "plugins": ["prettier-plugin-python"],
+    "tabWidth": 4,
+    "useTabs": false,
+    "singleQuote": true
+  }
+  

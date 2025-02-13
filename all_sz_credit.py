@@ -200,7 +200,7 @@ try:
         print(f"Ошибка при нажатии на кнопку 'Хранение шин': {e}")
 
     time.sleep(3)
-    driver.execute_script("window.scrollBy(0, 200);")
+    driver.execute_script("window.scrollBy(0, 200);") #scroll
     time.sleep(1)
     # Клик на кнопку "Переход к оформению"
     try:

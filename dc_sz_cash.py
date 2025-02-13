@@ -11,6 +11,7 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
 )
+from selenium.common.exceptions import ElementClickInterceptedException
 import time
 import re
 import random
@@ -395,6 +396,7 @@ try:
 
         # Прокручиваем страницу вниз
         try:
+            cancel_reason_select = driver.find_element((By.XPATH, '//*[@id="order-info-main-info"]/div[1]/div[4]/div[2]/div[9]/div[4]/label/span'))
             driver.execute_script("arguments[0].scrollIntoView();", cancel_reason_select)
             print("Прокрутка страницы вниз выполнена.")
         except Exception as e:

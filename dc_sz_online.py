@@ -11,14 +11,15 @@ from selenium.common.exceptions import (
     NoSuchElementException,
     StaleElementReferenceException,
 )
+from selenium.common.exceptions import ElementClickInterceptedException
 import time
 import re
 import random
 
 # Настройка драйвера
 options = Options()
-#options.add_argument("--headless")
-#options.add_argument("--window-size=1920x1080")
+# options.add_argument("--headless")
+# options.add_argument("--window-size=1920x1080")
 driver = webdriver.Chrome(service=Service(), options=options)
 
 try:
@@ -178,7 +179,12 @@ try:
     # Выбор способа доставки
     try:
         client_blue_zone = WebDriverWait(driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, "//input[@name='shipmentServiceId' and @value='ecar_courier_zone2']"))
+            EC.element_to_be_clickable(
+                (
+                    By.XPATH,
+                    "//input[@name='shipmentServiceId' and @value='ecar_courier_zone2']",
+                )
+            )
         )
         client_blue_zone.click()
         print("Кнопка - Выбора доставки нажата")
@@ -452,7 +458,7 @@ try:
 
     # ///////////////////////////////////////////////////////////////////////
 
-# Переход в админку для отмены заказа
+    # Переход в админку для отмены заказа
     try:
         driver.get("https://old-qa.ecar.kz/account/logon?returnUrl=%2fcabinet")  # Переход к старой версии админки
         driver.maximize_window()
@@ -498,6 +504,7 @@ try:
 
         # Прокручиваем страницу вниз
         try:
+            cancel_reason_select = driver.find_element((By.XPATH, '//*[@id="order-info-main-info"]/div[1]/div[4]/div[2]/div[9]/div[4]/label/span'))
             driver.execute_script("arguments[0].scrollIntoView();", cancel_reason_select)
             print("Прокрутка страницы вниз выполнена.")
         except Exception as e:

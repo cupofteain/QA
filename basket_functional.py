@@ -320,6 +320,106 @@ try:
     except Exception as e:
         print(f"Ошибка при нажатии на кнопку '+': {e}")
 
+# Переход в админку для отмены заказа
+    try:
+        driver.get("https://old-qa.ecar.kz/account/logon?returnUrl=%2fcabinet")  # Переход к старой версии админки
+        driver.maximize_window()
+
+        # Ввод логина
+        admin_username_input = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.NAME, "login"))
+        )
+        admin_username_input.send_keys("ramash.yerkezhan1")
+        print("Логин администратора введен.")
+
+        # Ввод пароля
+        admin_password_input = WebDriverWait(driver, 10).until(
+            EC.element_to_be_clickable((By.NAME, "password"))
+        )
+        admin_password_input.send_keys("Alm123456")
+        print("Пароль администратора введен.")
+
+        # Клик на кнопку "Войти"
+        admin_login_submit = WebDriverWait(driver, 15).until(
+            EC.element_to_be_clickable((By.XPATH, "//button[@type='submit' and contains(text(), 'Войти')]"))
+        )
+        admin_login_submit.click()
+        print("Кнопка 'Войти' нажата.")
+
+        # Поиск созданного заказа для отмены
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.NAME, "idOrCode"))
+        )
+        search_input = driver.find_element(By.NAME, "idOrCode")
+        search_input.send_keys(order_number)
+        search_input.send_keys(Keys.RETURN)
+        print(f"Заказ {order_number} найден.")
+        
+        # Скроллим вниз до нужного элемента
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//select[@id='orderCancelReason']"))
+            ).click()
+            print("Элемент 'orderCancelReason' доступен и кликнут.")
+        except Exception as e:
+            print(f"Ошибка при клике на 'orderCancelReason': {e}")
+
+        # Прокручиваем страницу вниз
+        try:
+            driver.execute_script("arguments[0].scrollIntoView();", cancel_reason_select)
+            print("Прокрутка страницы вниз выполнена.")
+        except Exception as e:
+            print(f"Ошибка при прокрутке страницы вниз: {e}")
+
+        # Выбираем статус "Отменен"
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//span[text()='Отменен']"))
+            ).click()
+            print("Статус 'Отменен' выбран.")
+        except Exception as e:
+            print(f"Ошибка при выборе статуса 'Отменен': {e}")
+
+        # Даем немного времени для полной загрузки страницы
+        time.sleep(3)
+
+        # Далее поиск элемента
+        try:
+            cancel_reason_select = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.ID, "orderCancelReason"))
+            )
+            cancel_reason_select.click()
+            print("Элемент 'orderCancelReason' найден и кликнут.")
+            time.sleep(1)  # Даем время для появления элементов
+            cancel_reason_option = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//option[@value='301']"))  # Выбор "Тестовый заказ"
+            )
+            cancel_reason_option.click()
+            print("Причина отмены введена.")
+        except Exception as e:
+            print(f"Ошибка при выборе причины отмены: {e}")
+
+        # Клик на кнопку "Отменить заказ"
+        try:
+            cancel_order_button = WebDriverWait(driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, "//button[@type='button' and @class='btn btn-primary' and contains(text(), 'Отправить')]"))
+            )
+            cancel_order_button.click()
+            print(f"Заказ {order_number} отменен.")
+        except Exception as e:
+            print(f"Ошибка при клике на 'Отменить заказ': {e}")
+
+        # Проверка статуса "Отменен"
+        try:
+            WebDriverWait(driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, "//span[text()='Отменен']"))
+            )
+            print(f"Статус заказа {order_number} - 'Отменен'")
+        except TimeoutException:
+            print(f"Статус заказа {order_number} не изменился.")
+
+    except Exception as e:
+        print(f"Произошла ошибка: {e}")
 
 finally:
     time.sleep(5)
